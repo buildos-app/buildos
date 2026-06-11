@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>BuildOS</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>">
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<title>BuildOS — نظام إدارة التشطيبات</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -590,6 +589,7 @@ function ProjectsPage({user,showMsg}){
   const [modal,setM]=useState(null);const [sel,setSel]=useState(null);
   const [form,setF]=useState({cid:"",name:"",desc:"",status:"جاري",budget:"",start:today(),notes:""});
   const [iForm,setIF]=useState({type:"product",pid:"",cname:"",qty:1,len:"",wid:"",up:"",note:""});
+  const [payForm,setPF]=useState({amount:"",pm:"cash",note:""});
 
   useEffect(()=>{
     const u1=fbOn(`projects_${user.shopId}`,v=>setProj(v?Object.values(v):[]));
@@ -641,6 +641,20 @@ function ProjectsPage({user,showMsg}){
     setSel(p=>({...p,items:ui}));
   };
 
+  const addProjPayment=async()=>{
+    if(!sel||!payForm.amount){showMsg("اكتب المبلغ","error");return;}
+    const pay={id:"pay_"+Date.now(),amount:Number(payForm.amount),pm:payForm.pm,note:payForm.note,date:today(),time:getTime()};
+    const pays=[...(sel.payments||[]),pay];
+    await fbUpd(`projects_${user.shopId}/${sel.id}`,{payments:pays});
+    setSel(p=>({...p,payments:pays}));
+    setPF({amount:"",pm:"cash",note:""});showMsg("تم تسجيل الدفعة ✓");
+  };
+  const delProjPayment=async(pid)=>{
+    const pays=(sel.payments||[]).filter(p=>p.id!==pid);
+    await fbUpd(`projects_${user.shopId}/${sel.id}`,{payments:pays});
+    setSel(p=>({...p,payments:pays}));
+  };
+
   const del=async(id)=>{if(!confirm("حذف المشروع؟"))return;await fbDel(`projects_${user.shopId}/${id}`);showMsg("تم الحذف");};
   const STS=["جاري","مكتمل","متوقف","قيد المراجعة"];
   const SC={"جاري":"bb2","مكتمل":"bg2","متوقف":"br2","قيد المراجعة":"bor"};
@@ -655,16 +669,24 @@ function ProjectsPage({user,showMsg}){
         <div style={{display:"flex",flexDirection:"column",gap:10}}>
           {projs.slice().reverse().map(p=>{
             const tot=(p.items||[]).reduce((s,i)=>s+i.total,0);
+            const paid=(p.payments||[]).reduce((s,x)=>s+x.amount,0);
+            const remaining=tot-paid;
             return(
               <div key={p.id} className="card" style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}}>
                 <div>
                   <div className="fb2" style={{fontSize:14}}>🏗️ {p.name}</div>
                   <div className="tx tm">{p.clientName} · {p.startDate}</div>
-                  {tot>0&&<div className="tx ta" style={{marginTop:3}}>إجمالي البنود: {tot.toLocaleString()} ج</div>}
+                  {tot>0&&<div style={{marginTop:4,fontSize:12,display:"flex",gap:10,flexWrap:"wrap"}}>
+                    <span className="ta">إجمالي: {tot.toLocaleString()} ج</span>
+                    {paid>0&&<span style={{color:"var(--green)"}}>مدفوع: {paid.toLocaleString()} ج</span>}
+                    {remaining>0&&<span style={{color:"var(--red)"}}>متبقي: {remaining.toLocaleString()} ج</span>}
+                    {remaining===0&&tot>0&&<span style={{color:"var(--green)"}}>✓ مكتمل الدفع</span>}
+                  </div>}
                 </div>
                 <div className="fg2">
                   <span className={`bdg ${SC[p.status]||"bgr"}`}>{p.status}</span>
                   <button className="btn bg bsm" onClick={()=>{setSel(p);setM("detail");}}>تفاصيل / بنود</button>
+                  <button className="btn bs bsm" onClick={()=>{setSel(p);setM("payments");}}>💰 دفعات {(p.payments||[]).length>0&&`(${(p.payments||[]).length})`}</button>
                   <button className="btn bg bsm" onClick={()=>{setSel(p);setF({cid:p.clientId,name:p.name,desc:p.description||"",status:p.status,budget:p.budget||"",start:p.startDate,notes:p.notes||""});setM("form");}}>تعديل</button>
                   <button className="btn bd bsm" onClick={()=>del(p.id)}>حذف</button>
                 </div>
@@ -740,6 +762,64 @@ function ProjectsPage({user,showMsg}){
         </div>}
         <button className="btn ba bfl" onClick={addItem}>إضافة البند ✓</button>
       </Modal>}
+
+      {modal==="payments"&&sel&&(()=>{
+        const tot=(sel.items||[]).reduce((s,i)=>s+i.total,0);
+        const pays=sel.payments||[];
+        const paid=pays.reduce((s,p)=>s+p.amount,0);
+        const remaining=tot-paid;
+        return(
+          <Modal title={`💰 دفعات — ${sel.name}`} onClose={()=>setM(null)} wide>
+            {/* Summary */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:16}}>
+              <div style={{background:"var(--bg3)",borderRadius:10,padding:"12px 14px",textAlign:"center"}}>
+                <div style={{fontFamily:"var(--fen)",fontSize:18,fontWeight:800,color:"var(--accent)"}}>{tot.toLocaleString()} ج</div>
+                <div className="tx tm">إجمالي المشروع</div>
+              </div>
+              <div style={{background:"var(--bg3)",borderRadius:10,padding:"12px 14px",textAlign:"center"}}>
+                <div style={{fontFamily:"var(--fen)",fontSize:18,fontWeight:800,color:"var(--green)"}}>{paid.toLocaleString()} ج</div>
+                <div className="tx tm">إجمالي المدفوع</div>
+              </div>
+              <div style={{background:remaining>0?"rgba(239,68,68,.1)":"rgba(16,185,129,.1)",borderRadius:10,padding:"12px 14px",textAlign:"center",border:`1px solid ${remaining>0?"rgba(239,68,68,.3)":"rgba(16,185,129,.3)"}`}}>
+                <div style={{fontFamily:"var(--fen)",fontSize:18,fontWeight:800,color:remaining>0?"var(--red)":"var(--green)"}}>{remaining>0?remaining.toLocaleString()+" ج":"مكتمل ✓"}</div>
+                <div className="tx tm">{remaining>0?"المتبقي":"الدفع"}</div>
+              </div>
+            </div>
+            {tot>0&&<div style={{height:8,background:"var(--bg3)",borderRadius:4,overflow:"hidden",marginBottom:14}}>
+              <div style={{height:"100%",width:`${Math.min(100,(paid/tot)*100)}%`,background:"var(--green)",borderRadius:4,transition:"width .3s"}}/>
+            </div>}
+            {/* Payments list */}
+            {pays.length>0&&<div style={{marginBottom:14}}>
+              <div className="ct" style={{marginBottom:8,fontSize:13}}>📋 سجل الدفعات</div>
+              {pays.map((p,i)=>(
+                <div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"9px 12px",background:"var(--bg3)",borderRadius:8,marginBottom:6}}>
+                  <div>
+                    <span style={{fontFamily:"var(--fen)",fontWeight:700,color:"var(--green)"}}>{p.amount.toLocaleString()} ج</span>
+                    <span className="tm" style={{fontSize:12,marginRight:8}}>{PMS.find(x=>x.id===p.pm)?.label||p.pm}</span>
+                    {p.note&&<span className="tm" style={{fontSize:12}}> · {p.note}</span>}
+                  </div>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <span className="tx tm">{p.date}</span>
+                    <button className="btn bd bsm" style={{padding:"3px 8px"}} onClick={()=>delProjPayment(p.id)}>✕</button>
+                  </div>
+                </div>
+              ))}
+            </div>}
+            {/* Add payment form */}
+            {remaining>0&&<>
+              <div className="dv"/>
+              <div className="ct" style={{marginBottom:10,fontSize:13}}>➕ تسجيل دفعة جديدة</div>
+              <div className="g2">
+                <div className="fg"><label>المبلغ (ج)</label><input type="number" value={payForm.amount} onChange={e=>setPF(f=>({...f,amount:e.target.value}))} placeholder={`المتبقي: ${remaining.toLocaleString()}`} autoFocus/></div>
+                <div className="fg"><label>ملاحظة</label><input value={payForm.note} onChange={e=>setPF(f=>({...f,note:e.target.value}))} placeholder="مقدم، دفعة أولى..."/></div>
+              </div>
+              <div className="fg"><label>طريقة الدفع</label><div className="pcs">{PMS.map(pm=><div key={pm.id} className={`pc ${payForm.pm===pm.id?"act":""}`} onClick={()=>setPF(f=>({...f,pm:pm.id}))}>{pm.icon} {pm.label}</div>)}</div></div>
+              <button className="btn ba bfl" onClick={addProjPayment}>تسجيل الدفعة 💰</button>
+            </>}
+            {remaining===0&&tot>0&&<div style={{textAlign:"center",padding:"14px",color:"var(--green)",fontWeight:700,fontSize:15}}>✅ تم سداد المبلغ كاملاً</div>}
+          </Modal>
+        );
+      })()}
     </div>
   );
 }
@@ -748,9 +828,10 @@ function ProjectsPage({user,showMsg}){
 function InvoicesPage({user,showMsg}){
   const [invs,setI]=useState([]);const [clients,setCl]=useState([]);const [projs,setPj]=useState([]);const [prods,setPr]=useState([]);
   const [modal,setM]=useState(null);const [sel,setSel]=useState(null);
-  const [form,setF]=useState({cid:"",pjid:"",notes:"",disc:0,pm:"cash",ps:"paid"});
+  const [form,setF]=useState({cid:"",pjid:"",notes:"",disc:0,pm:"cash",ps:"pending"});
   const [ex,setEx]=useState([]);
   const [exF,setExF]=useState({pid:"",cname:"",qty:1,len:"",wid:"",up:"",note:"",type:"product"});
+  const [invPayForm,setIPF]=useState({amount:"",pm:"cash",note:""});
   const printRef=useRef();
 
   useEffect(()=>{
@@ -796,10 +877,31 @@ function InvoicesPage({user,showMsg}){
     if(!form.cid){showMsg("اختار العميل","error");return;}
     const cl=clients.find(c=>c.id===form.cid);
     const id="inv_"+Date.now();
-    const inv={id,invoiceNo:"INV-"+Date.now().toString().slice(-6),clientId:form.cid,clientName:cl?.name||"",clientPhone:cl?.phone||"",clientAddress:cl?.address||"",projectId:form.pjid||null,projectName:selPj?.name||"",items:allIt,subtotal:sub,discount:disc,total:tot,paymentMethod:form.pm,payStatus:form.ps,notes:form.notes,date:today()};
+    // start as pending — payments tracked separately
+    const inv={id,invoiceNo:"INV-"+Date.now().toString().slice(-6),clientId:form.cid,clientName:cl?.name||"",clientPhone:cl?.phone||"",clientAddress:cl?.address||"",projectId:form.pjid||null,projectName:selPj?.name||"",items:allIt,subtotal:sub,discount:disc,total:tot,paymentMethod:form.pm,payStatus:"pending",payments:[],notes:form.notes,date:today()};
     await fbSet(`invoices_${user.shopId}/${id}`,inv);
-    if(form.ps==="paid") await fbSet(`sessions_${user.shopId}/sess_${Date.now()}`,{id:"sess_"+Date.now(),date:today(),time:getTime(),serviceNames:`فاتورة — ${cl?.name}`,amount:tot,paymentMethod:form.pm,clientId:form.cid,clientName:cl?.name,invoiceId:id});
-    setM(null);setF({cid:"",pjid:"",notes:"",disc:0,pm:"cash",ps:"paid"});setEx([]);showMsg("تم إنشاء الفاتورة ✓");
+    setM(null);setF({cid:"",pjid:"",notes:"",disc:0,pm:"cash",ps:"pending"});setEx([]);showMsg("تم إنشاء الفاتورة ✓");
+  };
+
+  const addInvPayment=async()=>{
+    if(!sel||!invPayForm.amount){showMsg("اكتب المبلغ","error");return;}
+    const pay={id:"pay_"+Date.now(),amount:Number(invPayForm.amount),pm:invPayForm.pm,note:invPayForm.note,date:today(),time:getTime()};
+    const pays=[...(sel.payments||[]),pay];
+    const paid=pays.reduce((s,p)=>s+p.amount,0);
+    const newStatus=paid>=sel.total?"paid":paid>0?"partial":"pending";
+    await fbUpd(`invoices_${user.shopId}/${sel.id}`,{payments:pays,payStatus:newStatus});
+    // log to sessions if any payment
+    await fbSet(`sessions_${user.shopId}/sess_${Date.now()}`,{id:"sess_"+Date.now(),date:today(),time:getTime(),serviceNames:`دفعة فاتورة — ${sel.clientName}`,amount:pay.amount,paymentMethod:pay.pm,clientId:sel.clientId,clientName:sel.clientName,invoiceId:sel.id});
+    setSel(p=>({...p,payments:pays,payStatus:newStatus}));
+    setIPF({amount:"",pm:"cash",note:""});showMsg("تم تسجيل الدفعة ✓");
+  };
+
+  const delInvPayment=async(pid)=>{
+    const pays=(sel.payments||[]).filter(p=>p.id!==pid);
+    const paid=pays.reduce((s,p)=>s+p.amount,0);
+    const newStatus=paid>=sel.total?"paid":paid>0?"partial":"pending";
+    await fbUpd(`invoices_${user.shopId}/${sel.id}`,{payments:pays,payStatus:newStatus});
+    setSel(p=>({...p,payments:pays,payStatus:newStatus}));
   };
 
   const doPrint=()=>{
@@ -820,18 +922,26 @@ function InvoicesPage({user,showMsg}){
       <div className="card">
         {invs.length===0?<Empty icon="🧾" text="لا يوجد فواتير بعد"/>:(
           <div className="tw"><table>
-            <thead><tr><th>رقم الفاتورة</th><th>العميل</th><th>المشروع</th><th>الإجمالي</th><th>التاريخ</th><th>الحالة</th><th>إجراءات</th></tr></thead>
-            <tbody>{invs.slice().reverse().map(inv=>(
-              <tr key={inv.id}>
-                <td><span className="bdg ba2 fen">{inv.invoiceNo}</span></td>
-                <td className="fb2">{inv.clientName}</td>
-                <td className="tm ts">{inv.projectName||"—"}</td>
-                <td><span className="bdg bg2">{inv.total?.toLocaleString()} ج</span></td>
-                <td className="tm ts">{inv.date}</td>
-                <td><span className={`bdg ${SC[inv.payStatus]||"bgr"}`}>{SL[inv.payStatus]||inv.payStatus}</span></td>
-                <td><button className="btn bg bsm" onClick={()=>{setSel(inv);setM("view");}}>عرض / طباعة</button></td>
-              </tr>
-            ))}</tbody>
+            <thead><tr><th>رقم الفاتورة</th><th>العميل</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th><th>التاريخ</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+            <tbody>{invs.slice().reverse().map(inv=>{
+              const paid=(inv.payments||[]).reduce((s,p)=>s+p.amount,0);
+              const remaining=inv.total-paid;
+              return(
+                <tr key={inv.id}>
+                  <td><span className="bdg ba2 fen">{inv.invoiceNo}</span></td>
+                  <td><div className="fb2">{inv.clientName}</div><div className="tx tm">{inv.projectName||""}</div></td>
+                  <td><span className="bdg ba2">{inv.total?.toLocaleString()} ج</span></td>
+                  <td><span style={{color:"var(--green)",fontWeight:700,fontSize:13}}>{paid>0?paid.toLocaleString()+" ج":"—"}</span></td>
+                  <td><span style={{color:remaining>0?"var(--red)":"var(--green)",fontWeight:700,fontSize:13}}>{remaining>0?remaining.toLocaleString()+" ج":"✓"}</span></td>
+                  <td className="tm ts">{inv.date}</td>
+                  <td><span className={`bdg ${SC[inv.payStatus]||"bgr"}`}>{SL[inv.payStatus]||inv.payStatus}</span></td>
+                  <td><div className="fg2">
+                    <button className="btn bs bsm" onClick={()=>{setSel({...inv});setM("inv_payments");}}>💰 دفعات</button>
+                    <button className="btn bg bsm" onClick={()=>{setSel(inv);setM("view");}}>🖨️ طباعة</button>
+                  </div></td>
+                </tr>
+              );
+            })}</tbody>
           </table></div>
         )}
       </div>
@@ -879,15 +989,71 @@ function InvoicesPage({user,showMsg}){
           <button className="btn bg bsm" style={{marginTop:8}} onClick={addEx}>+ إضافة البند</button>
         </div>
 
-        <div className="g2">
-          <div className="fg"><label>خصم (ج)</label><input type="number" value={form.disc} onChange={e=>setF(f=>({...f,disc:e.target.value}))}/></div>
-          <div className="fg"><label>حالة الدفع</label><div className="chips">{[["paid","مدفوع"],["pending","معلق"],["partial","جزئي"]].map(([id,lb])=><div key={id} className={`chip ${form.ps===id?"act":""}`} onClick={()=>setF(f=>({...f,ps:id}))}>{lb}</div>)}</div></div>
-        </div>
-        <div className="fg"><label>طريقة الدفع</label><div className="pcs">{PMS.map(pm=><div key={pm.id} className={`pc ${form.pm===pm.id?"act":""}`} onClick={()=>setF(f=>({...f,pm:pm.id}))}>{pm.icon} {pm.label}</div>)}</div></div>
+        <div className="fg"><label>طريقة الدفع الافتراضية</label><div className="pcs">{PMS.map(pm=><div key={pm.id} className={`pc ${form.pm===pm.id?"act":""}`} onClick={()=>setF(f=>({...f,pm:pm.id}))}>{pm.icon} {pm.label}</div>)}</div></div>
         <div className="fg"><label>ملاحظات</label><textarea rows={2} value={form.notes} onChange={e=>setF(f=>({...f,notes:e.target.value}))}/></div>
         {tot>0&&<div style={{background:"var(--bg3)",borderRadius:10,padding:"13px 16px",marginBottom:12,display:"flex",justifyContent:"space-between",alignItems:"center"}}><span className="tm ts">الإجمالي النهائي {disc>0?`(بعد خصم ${disc} ج)`:""}</span><span style={{fontFamily:"var(--fen)",fontSize:20,fontWeight:800,color:"var(--accent)"}}>{tot.toLocaleString()} ج</span></div>}
         <div className="fg2 mt16"><button className="btn ba" style={{flex:1}} onClick={saveInv}>إنشاء الفاتورة 🧾</button><button className="btn bg" onClick={()=>setM(null)}>إلغاء</button></div>
       </Modal>}
+
+      {modal==="inv_payments"&&sel&&(()=>{
+        const pays=sel.payments||[];
+        const paid=pays.reduce((s,p)=>s+p.amount,0);
+        const remaining=sel.total-paid;
+        return(
+          <Modal title={`💰 دفعات — ${sel.invoiceNo}`} onClose={()=>setM(null)} wide>
+            <div style={{fontSize:12,color:"var(--txt3)",marginBottom:12}}>{sel.clientName}{sel.projectName&&` · ${sel.projectName}`}</div>
+            {/* Summary */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:14}}>
+              <div style={{background:"var(--bg3)",borderRadius:10,padding:"12px 14px",textAlign:"center"}}>
+                <div style={{fontFamily:"var(--fen)",fontSize:18,fontWeight:800,color:"var(--accent)"}}>{sel.total?.toLocaleString()} ج</div>
+                <div className="tx tm">إجمالي الفاتورة</div>
+              </div>
+              <div style={{background:"var(--bg3)",borderRadius:10,padding:"12px 14px",textAlign:"center"}}>
+                <div style={{fontFamily:"var(--fen)",fontSize:18,fontWeight:800,color:"var(--green)"}}>{paid.toLocaleString()} ج</div>
+                <div className="tx tm">إجمالي المدفوع</div>
+              </div>
+              <div style={{background:remaining>0?"rgba(239,68,68,.1)":"rgba(16,185,129,.1)",borderRadius:10,padding:"12px 14px",textAlign:"center",border:`1px solid ${remaining>0?"rgba(239,68,68,.3)":"rgba(16,185,129,.3)"}`}}>
+                <div style={{fontFamily:"var(--fen)",fontSize:18,fontWeight:800,color:remaining>0?"var(--red)":"var(--green)"}}>{remaining>0?remaining.toLocaleString()+" ج":"مكتمل ✓"}</div>
+                <div className="tx tm">{remaining>0?"المتبقي":"الدفع"}</div>
+              </div>
+            </div>
+            {sel.total>0&&<div style={{height:8,background:"var(--bg3)",borderRadius:4,overflow:"hidden",marginBottom:14}}>
+              <div style={{height:"100%",width:`${Math.min(100,(paid/sel.total)*100)}%`,background:"var(--green)",borderRadius:4}}/>
+            </div>}
+            {/* Payments list */}
+            {pays.length>0&&<div style={{marginBottom:14}}>
+              <div className="ct" style={{marginBottom:8,fontSize:13}}>📋 سجل الدفعات</div>
+              {pays.map(p=>(
+                <div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"9px 12px",background:"var(--bg3)",borderRadius:8,marginBottom:6}}>
+                  <div>
+                    <span style={{fontFamily:"var(--fen)",fontWeight:700,color:"var(--green)"}}>{p.amount.toLocaleString()} ج</span>
+                    <span className="tm" style={{fontSize:12,marginRight:8}}>{PMS.find(x=>x.id===p.pm)?.label||p.pm}</span>
+                    {p.note&&<span className="tm" style={{fontSize:12}}> · {p.note}</span>}
+                  </div>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <span className="tx tm">{p.date}</span>
+                    <button className="btn bd bsm" style={{padding:"3px 8px"}} onClick={()=>delInvPayment(p.id)}>✕</button>
+                  </div>
+                </div>
+              ))}
+            </div>}
+            {/* Add payment */}
+            {remaining>0&&<>
+              <div className="dv"/>
+              <div className="ct" style={{marginBottom:10,fontSize:13}}>➕ تسجيل دفعة جديدة</div>
+              <div className="g2">
+                <div className="fg"><label>المبلغ (ج)</label><input type="number" value={invPayForm.amount} onChange={e=>setIPF(f=>({...f,amount:e.target.value}))} placeholder={`المتبقي: ${remaining.toLocaleString()}`} autoFocus/></div>
+                <div className="fg"><label>ملاحظة</label><input value={invPayForm.note} onChange={e=>setIPF(f=>({...f,note:e.target.value}))} placeholder="مقدم، دفعة أولى..."/></div>
+              </div>
+              <div className="fg"><label>طريقة الدفع</label><div className="pcs">{PMS.map(pm=><div key={pm.id} className={`pc ${invPayForm.pm===pm.id?"act":""}`} onClick={()=>setIPF(f=>({...f,pm:pm.id}))}>{pm.icon} {pm.label}</div>)}</div></div>
+              <button className="btn ba bfl" onClick={addInvPayment}>تسجيل الدفعة 💰</button>
+            </>}
+            {remaining===0&&<div style={{textAlign:"center",padding:"14px",color:"var(--green)",fontWeight:700,fontSize:15}}>✅ تم سداد الفاتورة كاملاً</div>}
+            <div className="dv"/>
+            <button className="btn bg bfl" onClick={()=>{setSel(sel);setM("view");}}>🖨️ طباعة الفاتورة</button>
+          </Modal>
+        );
+      })()}
 
       {modal==="view"&&sel&&<Modal title="" onClose={()=>setM(null)}>
         <div className="fg2" style={{marginBottom:14}}>
