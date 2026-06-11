@@ -4,16 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>BuildOS — نظام إدارة التشطيبات</title>
-
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-
-<!-- React -->
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -29,15 +24,11 @@
 }
 body{font-family:var(--far);background:var(--bg);color:var(--txt);direction:rtl;overflow-x:hidden}
 #root{min-height:100vh}
-
-/* loading */
 .ls{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px}
 .ll{font-family:var(--fen);font-size:42px;font-weight:800;color:var(--accent);letter-spacing:-1px}
 .ll span{color:var(--txt3)}
 .spin{width:36px;height:36px;border:3px solid var(--adim);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* auth */
 .ap{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;position:relative}
 .ap::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% -10%,rgba(245,166,35,.12) 0%,transparent 70%);pointer-events:none}
 .ab{background:var(--bg2);border:1px solid var(--brd2);border-radius:20px;padding:44px 40px;width:440px;max-width:calc(100vw - 32px);box-shadow:var(--shlg);position:relative;z-index:1}
@@ -46,8 +37,6 @@ body{font-family:var(--far);background:var(--bg);color:var(--txt);direction:rtl;
 .atabs{display:flex;background:var(--bg3);border-radius:10px;padding:4px;gap:4px;margin-bottom:24px}
 .atab{flex:1;padding:9px;text-align:center;border:none;background:transparent;color:var(--txt2);font-size:13px;font-weight:600;cursor:pointer;border-radius:8px;font-family:var(--far);transition:all .2s}
 .atab.act{background:var(--accent);color:var(--bg)}
-
-/* forms */
 .fg{margin-bottom:14px}
 .fg label{display:block;font-size:11px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px}
 .fg input,.fg select,.fg textarea{width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--brd);border-radius:var(--rs);font-size:14px;font-family:var(--far);color:var(--txt);outline:none;transition:border-color .2s;resize:vertical}
@@ -55,10 +44,9 @@ body{font-family:var(--far);background:var(--bg);color:var(--txt);direction:rtl;
 .fg select option{background:var(--bg3)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
 .rrow{display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:13px;color:var(--txt2);cursor:pointer}
 .rrow input{accent-color:var(--accent);width:15px;height:15px}
-
-/* buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 20px;border-radius:var(--rs);font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:var(--far);transition:all .18s;white-space:nowrap}
 .ba{background:var(--accent);color:var(--bg)}.ba:hover{background:var(--accent2);transform:translateY(-1px)}
 .bg{background:transparent;border:1.5px solid var(--brd2);color:var(--txt)}.bg:hover{border-color:var(--accent);color:var(--accent)}
@@ -70,16 +58,12 @@ body{font-family:var(--far);background:var(--bg);color:var(--txt);direction:rtl;
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .em{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.3);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px}
 .sm{background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.3);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px}
-
-/* layout */
 .lay{display:flex;min-height:100vh}
 .mhdr{display:none;position:fixed;top:0;right:0;left:0;height:56px;background:var(--bg2);border-bottom:1px solid var(--brd);z-index:200;align-items:center;padding:0 16px;gap:12px}
 .mhdr .mlogo{font-family:var(--fen);font-size:18px;font-weight:800;color:var(--accent);flex:1}
 .hbg{background:none;border:none;color:var(--txt2);font-size:20px;cursor:pointer}
 .sov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:299}
 .sov.op{display:block}
-
-/* sidebar */
 .sb{width:var(--sw);background:var(--bg2);border-left:1px solid var(--brd);display:flex;flex-direction:column;position:fixed;height:100vh;right:0;top:0;z-index:100;overflow-y:auto}
 .sbl{padding:24px 20px 16px;border-bottom:1px solid var(--brd)}
 .sbl .lt{font-family:var(--fen);font-size:24px;font-weight:800;color:var(--accent)}
@@ -97,8 +81,6 @@ body{font-family:var(--far);background:var(--bg);color:var(--txt);direction:rtl;
 .ni.act{background:var(--adim);color:var(--accent);border-right-color:var(--accent)}
 .nic{font-size:15px;width:20px;text-align:center}
 .sbb{padding:14px 20px;border-top:1px solid var(--brd)}
-
-/* main */
 .main{margin-right:var(--sw);flex:1;padding:28px;background:var(--bg);min-height:100vh}
 .ph{margin-bottom:22px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px}
 .ph h1{font-family:var(--fen);font-size:26px;font-weight:800;color:var(--txt)}
@@ -107,22 +89,16 @@ body{font-family:var(--far);background:var(--bg);color:var(--txt);direction:rtl;
 .ct{font-family:var(--fen);font-size:14px;font-weight:700;margin-bottom:16px;color:var(--txt);display:flex;align-items:center;gap:8px}
 .mb16{margin-bottom:16px}.mb20{margin-bottom:20px}.mb24{margin-bottom:24px}
 .mt12{margin-top:12px}.mt16{margin-top:16px}
-
-/* stats */
 .sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:18px}
 .sc{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:16px 18px;display:flex;align-items:center;gap:12px}
 .si{font-size:26px}.sv{font-family:var(--fen);font-size:22px;font-weight:800}.sl{font-size:10px;color:var(--txt3);margin-top:2px;text-transform:uppercase;letter-spacing:1px}
 .sa{border-top:3px solid var(--accent)}.sg2{border-top:3px solid var(--green)}.sb2{border-top:3px solid var(--blue)}.sr{border-top:3px solid var(--red)}.sp{border-top:3px solid var(--purple)}
-
-/* table */
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;min-width:480px}
 thead th{background:var(--bg3);padding:9px 12px;text-align:right;font-size:11px;color:var(--txt3);font-weight:700;text-transform:uppercase;letter-spacing:1px}
 tbody tr{border-bottom:1px solid var(--brd);transition:background .1s}
 tbody tr:hover{background:rgba(255,255,255,.02)}
 tbody td{padding:10px 12px;font-size:13px}
-
-/* badges */
 .bdg{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
 .ba2{background:rgba(245,166,35,.15);color:var(--accent)}
 .bg2{background:rgba(16,185,129,.15);color:var(--green)}
@@ -131,30 +107,22 @@ tbody td{padding:10px 12px;font-size:13px}
 .bgr{background:var(--bg3);color:var(--txt2)}
 .bpu{background:rgba(139,92,246,.15);color:var(--purple)}
 .bor{background:rgba(245,158,11,.15);color:var(--orange)}
-
-/* modal */
 .mo{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:999;padding:20px}
-.md{background:var(--bg2);border:1px solid var(--brd2);border-radius:20px;padding:26px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:var(--shlg)}
+.md{background:var(--bg2);border:1px solid var(--brd2);border-radius:20px;padding:26px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:var(--shlg)}
 .mhd{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
 .mtt{font-family:var(--fen);font-size:17px;font-weight:800;color:var(--txt)}
 .mcl{background:none;border:none;color:var(--txt3);font-size:20px;cursor:pointer}
 .mcl:hover{color:var(--red)}
-
-/* chips */
 .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:5px}
 .chip{padding:6px 13px;border-radius:20px;font-size:12px;font-weight:600;background:var(--bg3);border:1.5px solid transparent;cursor:pointer;transition:all .15s;color:var(--txt2)}
 .chip.act{background:var(--adim);border-color:var(--accent);color:var(--accent)}
 .pcs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
 .pc{padding:9px 12px;background:var(--bg3);border:1.5px solid transparent;border-radius:var(--rs);cursor:pointer;font-size:13px;font-weight:600;color:var(--txt2);display:flex;align-items:center;gap:8px;transition:all .15s}
 .pc.act{background:var(--adim);border-color:var(--accent);color:var(--accent)}
-
-/* search */
 .sw{position:relative}
 .si2{width:100%;padding:10px 38px 10px 14px;background:var(--bg3);border:1.5px solid var(--brd);border-radius:var(--rs);font-size:13px;font-family:var(--far);color:var(--txt);outline:none}
 .si2:focus{border-color:var(--accent)}
 .sic{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--txt3);font-size:14px;pointer-events:none}
-
-/* misc */
 .fb{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
 .fg2{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .es{text-align:center;padding:48px 24px;color:var(--txt3)}
@@ -162,33 +130,31 @@ tbody td{padding:10px 12px;font-size:13px}
 .dv{height:1px;background:var(--brd);margin:16px 0}
 .ts{font-size:12px}.tx{font-size:11px}.tm{color:var(--txt3)}.ta{color:var(--accent)}.tg{color:var(--green)}.trd{color:var(--red)}
 .fb2{font-weight:700}.fen{font-family:var(--fen)}
-
-/* client card */
 .cc{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;transition:border-color .2s;flex-wrap:wrap;gap:10px}
 .cc:hover{border-color:var(--brd2)}
 .cav{width:40px;height:40px;border-radius:50%;background:var(--adim);border:2px solid var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--fen);font-size:14px;font-weight:800;flex-shrink:0}
-
 /* attendance */
-.ag{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px}
-.ac{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--rs);padding:12px}
-.an{font-weight:700;font-size:13px;margin-bottom:6px}
-.ab2{padding:5px 9px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid transparent;font-family:var(--far);transition:all .15s;background:var(--bg4);color:var(--txt2)}
-
+.ag{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.ac{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--rs);padding:14px}
+.an{font-weight:700;font-size:13px;margin-bottom:8px}
+.att-btn{padding:6px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid transparent;font-family:var(--far);transition:all .15s;background:var(--bg4);color:var(--txt2);flex:1;text-align:center}
+.att-btn.sel{color:white;border-color:transparent}
+/* salary calc */
+.sal-box{background:var(--bg3);border-radius:10px;padding:14px;margin-top:10px}
+.sal-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;border-bottom:1px solid var(--brd)}
+.sal-row:last-child{border-bottom:none;font-weight:700;color:var(--accent)}
 /* bar chart */
 .bc{display:flex;align-items:flex-end;gap:6px;height:90px;margin-top:10px}
 .bcl{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%}
 .bcf{width:100%;background:var(--accent);border-radius:4px 4px 0 0;min-height:3px}
 .bclb{font-size:10px;color:var(--txt3)}
-
 /* invoice */
 .inv{background:white;color:#111;padding:36px;border-radius:12px;font-family:var(--far);direction:rtl}
 .invl{font-family:var(--fen);font-size:26px;font-weight:800;color:#f5a623}
 .invt th{background:#f5f5f5;padding:8px 12px;text-align:right;font-size:12px;font-weight:700;border:1px solid #eee}
 .invt td{padding:8px 12px;border:1px solid #eee;font-size:13px}
-
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .fi{animation:fadeUp .25s ease}
-
 @media(max-width:768px){
   .mhdr{display:flex}
   .sb{transform:translateX(100%);z-index:300;transition:transform .3s}
@@ -197,19 +163,20 @@ tbody td{padding:10px 12px;font-size:13px}
   .sg{grid-template-columns:1fr 1fr}
   .g2{grid-template-columns:1fr}
   .g3{grid-template-columns:1fr 1fr}
+  .g4{grid-template-columns:1fr 1fr}
   .mo{align-items:flex-end;padding:0}
   .md{border-radius:20px 20px 0 0;max-width:100vw}
   .ph h1{font-size:20px}
 }
 @media(max-width:480px){
   .g3{grid-template-columns:1fr}
+  .g4{grid-template-columns:1fr 1fr}
   .ag{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
 <body>
 <div id="root"></div>
-
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyCOBaMkl_j-dwFiq85ioDjwVipvLCA61AA",
@@ -223,14 +190,12 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-
 const fbGet  = (path) => db.ref(path).get().then(s => s.exists() ? s.val() : null);
 const fbSet  = (path, val) => db.ref(path).set(val);
 const fbUpd  = (path, val) => db.ref(path).update(val);
 const fbDel  = (path) => db.ref(path).remove();
 const fbOn   = (path, cb) => { const ref = db.ref(path); ref.on('value', s => cb(s.exists() ? s.val() : null)); return () => ref.off(); };
 </script>
-
 <script type="text/babel">
 const { useState, useEffect, useRef } = React;
 
@@ -238,6 +203,16 @@ const getNow = () => { const n=new Date(); return new Date(n.getTime()+n.getTime
 const today     = () => getNow().toISOString().slice(0,10);
 const thisMonth = () => getNow().toISOString().slice(0,7);
 const getTime   = () => getNow().toTimeString().slice(0,5);
+
+// Generate numeric 3-digit client ID (001-999)
+const genClientId = (existing=[]) => {
+  const used = existing.map(id => parseInt(id)).filter(n => !isNaN(n));
+  for(let i=1; i<=999; i++){
+    if(!used.includes(i)) return String(i).padStart(3,'0');
+  }
+  return String(Math.floor(Math.random()*999)+1).padStart(3,'0');
+};
+
 const genId = (ex=[]) => { let id; do{id=Math.random().toString(36).slice(2,8).toUpperCase();}while(ex.includes(id)); return id; };
 
 const PMS = [
@@ -247,11 +222,13 @@ const PMS = [
   {id:"visa",label:"Visa",icon:"💳"},
   {id:"transfer",label:"تحويل بنكي",icon:"🏦"},
 ];
-const ATTS = [
-  {id:"present",label:"حاضر",color:"#10b981"},
-  {id:"absent",label:"غائب",color:"#ef4444"},
-  {id:"late",label:"متأخر",color:"#f59e0b"},
-  {id:"leave",label:"إجازة",color:"#6366f1"},
+
+// Attendance status options — 4 types
+const ATT_STATUSES = [
+  {id:"present", label:"حاضر",      color:"#10b981", short:"حضور"},
+  {id:"absent",  label:"غائب",       color:"#ef4444", short:"غياب"},
+  {id:"late",    label:"متأخر",      color:"#f59e0b", short:"تأخير"},
+  {id:"leave",   label:"إجازة",      color:"#6366f1", short:"إجازة"},
 ];
 
 const seed = async () => {
@@ -261,9 +238,9 @@ const seed = async () => {
 };
 
 /* ===== SHARED COMPONENTS ===== */
-const Modal = ({title,onClose,children}) => (
+const Modal = ({title,onClose,children,wide}) => (
   <div className="mo" onClick={e=>e.target===e.currentTarget&&onClose()}>
-    <div className="md fi">
+    <div className="md fi" style={wide?{maxWidth:680}:{}}>
       {title&&<div className="mhd"><h2 className="mtt">{title}</h2><button className="mcl" onClick={onClose}>✕</button></div>}
       {children}
     </div>
@@ -290,13 +267,31 @@ function App(){
         try{
           const s=JSON.parse(sv);
           const u=await fbGet(`users/${s.id}`);
-          if(u&&u.active!==false) setUser(u);
+          if(u && u.active!==false) setUser(u);
+          else if(u && u.active===false) localStorage.removeItem("buildos_s");
         }catch(e){}
       }
       setLd(false);
     };
     init();
   },[]);
+
+  // Real-time active status watcher — kicks out deactivated user immediately
+  useEffect(()=>{
+    if(!user || user.role==="superadmin") return;
+    const ref = db.ref(`users/${user.id}`);
+    const handler = ref.on('value', snap => {
+      if(snap.exists()){
+        const u = snap.val();
+        if(u.active===false){
+          localStorage.removeItem("buildos_s");
+          setUser(null);
+          setPage("dashboard");
+        }
+      }
+    });
+    return () => ref.off('value', handler);
+  },[user]);
 
   const showMsg=(t,tp="success")=>{setMsg({t,tp});setTimeout(()=>setMsg(null),3500)};
   const doLogin=(u,rem)=>{setUser(u);if(rem)localStorage.setItem("buildos_s",JSON.stringify({id:u.id}))};
@@ -442,13 +437,13 @@ function ClientsPage({user,showMsg}){
 
   const save=async()=>{
     if(!form.name.trim()){showMsg("اكتب اسم العميل","error");return;}
-    const id=genId(clients.map(c=>c.id));
+    const id=genClientId(clients.map(c=>c.id));
     const cl={id,name:form.name.trim(),phone:form.phone.trim(),address:form.address.trim(),notes:form.notes.trim(),createdAt:today()};
     await fbSet(`clients_${user.shopId}/${id}`,cl);
     setJC(cl);setF({name:"",phone:"",address:"",notes:""});setM("created");showMsg("تم تسجيل العميل ✓");
   };
   const del=async(id)=>{if(!confirm("هتحذف العميل ده؟"))return;await fbDel(`clients_${user.shopId}/${id}`);showMsg("تم الحذف");};
-  const filt=clients.filter(c=>c.name?.toLowerCase().includes(search.toLowerCase())||c.id?.includes(search.toUpperCase())||c.phone?.includes(search));
+  const filt=clients.filter(c=>c.name?.toLowerCase().includes(search.toLowerCase())||c.id?.includes(search)||c.phone?.includes(search));
 
   return(
     <div className="fi">
@@ -468,7 +463,7 @@ function ClientsPage({user,showMsg}){
                   <div><div className="fb2" style={{fontSize:14}}>{c.name}</div><div className="tx tm">{c.phone||"بدون رقم"} · {c.address||"بدون عنوان"}</div></div>
                 </div>
                 <div className="fg2">
-                  <span className="bdg ba2 fen">{c.id}</span>
+                  <span className="bdg ba2 fen" style={{fontFamily:"var(--fen)",fontSize:16,padding:"4px 12px"}}>{c.id}</span>
                   <button className="btn bg bsm" onClick={()=>{setSel(c);setM("view");}}>عرض</button>
                   <button className="btn bd bsm" onClick={()=>del(c.id)}>حذف</button>
                 </div>
@@ -491,7 +486,7 @@ function ClientsPage({user,showMsg}){
       {modal==="created"&&jc&&<Modal title="" onClose={()=>setM(null)}>
         <div style={{background:"var(--bg3)",borderRadius:14,padding:28,textAlign:"center",marginBottom:18}}>
           <div style={{fontSize:11,color:"var(--txt3)",letterSpacing:3,textTransform:"uppercase",marginBottom:8}}>ID العميل</div>
-          <div style={{fontFamily:"var(--fen)",fontSize:52,fontWeight:800,color:"var(--accent)",letterSpacing:8}}>{jc.id}</div>
+          <div style={{fontFamily:"var(--fen)",fontSize:64,fontWeight:800,color:"var(--accent)",letterSpacing:8}}>{jc.id}</div>
           <div style={{color:"var(--txt2)",marginTop:8}}>{jc.name}</div>
         </div>
         <button className="btn ba bfl" onClick={()=>setM(null)}>تمام ✓</button>
@@ -500,7 +495,7 @@ function ClientsPage({user,showMsg}){
         <div style={{display:"flex",gap:14,alignItems:"center",marginBottom:18}}>
           <div className="cav" style={{width:50,height:50,fontSize:18}}>{sel.name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase()}</div>
           <div><div className="fb2" style={{fontSize:16}}>{sel.name}</div><div className="ts tm">{sel.phone} · {sel.address}</div>{sel.notes&&<div className="tx tm" style={{marginTop:3}}>{sel.notes}</div>}</div>
-          <span className="bdg ba2 fen" style={{marginRight:"auto"}}>{sel.id}</span>
+          <span className="bdg ba2 fen" style={{marginRight:"auto",fontSize:18,padding:"4px 14px"}}>{sel.id}</span>
         </div>
         <button className="btn bg bfl" onClick={()=>setM(null)}>إغلاق</button>
       </Modal>}
@@ -508,41 +503,49 @@ function ClientsPage({user,showMsg}){
   );
 }
 
-/* ===== PRODUCTS ===== */
+/* ===== PRODUCTS — with calcType ===== */
 function ProductsPage({user,showMsg}){
   const [prods,setP]=useState([]);
   const [modal,setM]=useState(null);
-  const [form,setF]=useState({name:"",unit:"",cost:"",sell:"",stock:"",cat:"",eid:null});
+  const [form,setF]=useState({name:"",calcType:"piece",unit:"قطعة",cost:"",sell:"",stock:"",cat:"",eid:null});
 
   useEffect(()=>fbOn(`products_${user.shopId}`,v=>setP(v?Object.values(v):[])) ,[]);
+
+  const CALC_TYPES=[
+    {id:"piece",     label:"قطعة",         icon:"📦", unitDefault:"قطعة"},
+    {id:"meter_lin", label:"متر طولي",     icon:"📏", unitDefault:"م"},
+    {id:"meter_sqr", label:"متر مربع",     icon:"⬛", unitDefault:"م²"},
+  ];
 
   const save=async()=>{
     if(!form.name||!form.sell){showMsg("الاسم والسعر مطلوبان","error");return;}
     const id=form.eid||"prd_"+Date.now();
-    await fbSet(`products_${user.shopId}/${id}`,{id,name:form.name,unit:form.unit||"قطعة",costPrice:Number(form.cost||0),sellPrice:Number(form.sell),stock:Number(form.stock||0),category:form.cat||"عام"});
+    await fbSet(`products_${user.shopId}/${id}`,{id,name:form.name,calcType:form.calcType||"piece",unit:form.unit||"قطعة",costPrice:Number(form.cost||0),sellPrice:Number(form.sell),stock:Number(form.stock||0),category:form.cat||"عام"});
     setM(null);showMsg("تم الحفظ ✓");
   };
   const del=async(id)=>{if(!confirm("حذف؟"))return;await fbDel(`products_${user.shopId}/${id}`);showMsg("تم الحذف");};
+  const CLBL={piece:"قطعة",meter_lin:"متر طولي",meter_sqr:"متر مربع"};
 
   return(
     <div className="fi">
       <div className="ph">
         <div><h1>المنتجات والمواد</h1><p>{prods.length} منتج</p></div>
-        <button className="btn ba" onClick={()=>{setF({name:"",unit:"",cost:"",sell:"",stock:"",cat:"",eid:null});setM("form");}}>+ إضافة منتج</button>
+        <button className="btn ba" onClick={()=>{setF({name:"",calcType:"piece",unit:"قطعة",cost:"",sell:"",stock:"",cat:"",eid:null});setM("form");}}>+ إضافة منتج</button>
       </div>
       <div className="card">
         {prods.length===0?<Empty icon="📦" text="لا يوجد منتجات بعد"/>:(
           <div className="tw"><table>
-            <thead><tr><th>#</th><th>المنتج</th><th>الفئة</th><th>الوحدة</th><th>التكلفة</th><th>البيع</th><th>المخزون</th><th>إجراءات</th></tr></thead>
+            <thead><tr><th>#</th><th>المنتج</th><th>الفئة</th><th>طريقة الحساب</th><th>التكلفة</th><th>سعر البيع</th><th>المخزون</th><th>إجراءات</th></tr></thead>
             <tbody>{prods.map((p,i)=>(
               <tr key={p.id}>
                 <td className="tm">{i+1}</td><td className="fb2">{p.name}</td>
                 <td><span className="bdg bb2">{p.category}</span></td>
-                <td className="tm">{p.unit}</td><td className="tm">{p.costPrice} ج</td>
-                <td><span className="bdg ba2">{p.sellPrice} ج</span></td>
+                <td><span className="bdg bpu">{CLBL[p.calcType]||"قطعة"}</span></td>
+                <td className="tm">{p.costPrice} ج</td>
+                <td><span className="bdg ba2">{p.sellPrice} ج / {p.unit}</span></td>
                 <td><span className={`bdg ${p.stock<=0?"br2":p.stock<=5?"bor":"bg2"}`}>{p.stock}</span></td>
                 <td><div className="fg2">
-                  <button className="btn bg bsm" onClick={()=>{setF({name:p.name,unit:p.unit,cost:p.costPrice,sell:p.sellPrice,stock:p.stock,cat:p.category,eid:p.id});setM("form");}}>تعديل</button>
+                  <button className="btn bg bsm" onClick={()=>{setF({name:p.name,calcType:p.calcType||"piece",unit:p.unit,cost:p.costPrice,sell:p.sellPrice,stock:p.stock,cat:p.category,eid:p.id});setM("form");}}>تعديل</button>
                   <button className="btn bd bsm" onClick={()=>del(p.id)}>حذف</button>
                 </div></td>
               </tr>
@@ -555,8 +558,19 @@ function ProductsPage({user,showMsg}){
           <div className="fg"><label>اسم المنتج / المادة</label><input value={form.name} onChange={e=>setF(f=>({...f,name:e.target.value}))} autoFocus/></div>
           <div className="fg"><label>الفئة</label><input value={form.cat} onChange={e=>setF(f=>({...f,cat:e.target.value}))} placeholder="دهانات، سيراميك..."/></div>
         </div>
+        <div className="fg">
+          <label>طريقة الحساب</label>
+          <div className="chips">
+            {CALC_TYPES.map(ct=>(
+              <div key={ct.id} className={`chip ${form.calcType===ct.id?"act":""}`}
+                onClick={()=>setF(f=>({...f,calcType:ct.id,unit:ct.unitDefault}))}>
+                {ct.icon} {ct.label}
+              </div>
+            ))}
+          </div>
+        </div>
         <div className="g3">
-          <div className="fg"><label>الوحدة</label><input value={form.unit} onChange={e=>setF(f=>({...f,unit:e.target.value}))} placeholder="متر، قطعة..."/></div>
+          <div className="fg"><label>الوحدة</label><input value={form.unit} onChange={e=>setF(f=>({...f,unit:e.target.value}))}/></div>
           <div className="fg"><label>سعر التكلفة</label><input type="number" value={form.cost} onChange={e=>setF(f=>({...f,cost:e.target.value}))}/></div>
           <div className="fg"><label>سعر البيع</label><input type="number" value={form.sell} onChange={e=>setF(f=>({...f,sell:e.target.value}))}/></div>
         </div>
@@ -574,7 +588,7 @@ function ProjectsPage({user,showMsg}){
   const [prods,setPr]=useState([]);
   const [modal,setM]=useState(null);const [sel,setSel]=useState(null);
   const [form,setF]=useState({cid:"",name:"",desc:"",status:"جاري",budget:"",start:today(),notes:""});
-  const [iForm,setIF]=useState({type:"product",pid:"",cname:"",qty:1,up:"",note:""});
+  const [iForm,setIF]=useState({type:"product",pid:"",cname:"",qty:1,len:"",wid:"",up:"",note:""});
 
   useEffect(()=>{
     const u1=fbOn(`projects_${user.shopId}`,v=>setProj(v?Object.values(v):[]));
@@ -582,6 +596,17 @@ function ProjectsPage({user,showMsg}){
     const u3=fbOn(`products_${user.shopId}`,v=>setPr(v?Object.values(v):[]));
     return()=>{u1();u2();u3();};
   },[]);
+
+  const selProd = prods.find(p=>p.id===iForm.pid);
+  const calcTotal=()=>{
+    if(!iForm.up) return 0;
+    const up=Number(iForm.up);
+    if(iForm.type==="product" && selProd){
+      if(selProd.calcType==="meter_sqr") return (Number(iForm.len||0)*Number(iForm.wid||0))*up;
+      if(selProd.calcType==="meter_lin") return Number(iForm.len||0)*up;
+    }
+    return Number(iForm.qty||1)*up;
+  };
 
   const saveProj=async()=>{
     if(!form.cid||!form.name){showMsg("اختار العميل واكتب اسم المشروع","error");return;}
@@ -593,15 +618,20 @@ function ProjectsPage({user,showMsg}){
 
   const addItem=async()=>{
     if(!sel) return;
-    const prod=iForm.type==="product"?prods.find(p=>p.id===iForm.pid):null;
+    const prod=iForm.type==="product"?selProd:null;
     const name=prod?prod.name:iForm.cname;
     if(!name){showMsg("اكتب اسم البند","error");return;}
     const up=Number(iForm.up||prod?.sellPrice||0);
-    const item={id:"item_"+Date.now(),type:iForm.type,name,qty:Number(iForm.qty||1),unitPrice:up,total:Number(iForm.qty||1)*up,note:iForm.note,productId:prod?.id||null};
+    const total=calcTotal()||Number(iForm.qty||1)*up;
+    let qty=Number(iForm.qty||1);
+    let displayNote=iForm.note;
+    if(prod?.calcType==="meter_sqr"){qty=Number(iForm.len||0)*Number(iForm.wid||0);displayNote=(displayNote?displayNote+" — ":"")+`${iForm.len}م × ${iForm.wid}م = ${qty.toFixed(2)} م²`;}
+    else if(prod?.calcType==="meter_lin"){qty=Number(iForm.len||0);displayNote=(displayNote?displayNote+" — ":"")+`طول: ${qty} م`;}
+    const item={id:"item_"+Date.now(),type:iForm.type,name,qty:parseFloat(qty.toFixed(4)),unitPrice:up,total:parseFloat(total.toFixed(2)),note:displayNote,productId:prod?.id||null,calcType:prod?.calcType||"piece"};
     const ui=[...(sel.items||[]),item];
     await fbUpd(`projects_${user.shopId}/${sel.id}`,{items:ui});
     setSel(p=>({...p,items:ui}));
-    setIF({type:"product",pid:"",cname:"",qty:1,up:"",note:""});showMsg("تم إضافة البند ✓");
+    setIF({type:"product",pid:"",cname:"",qty:1,len:"",wid:"",up:"",note:""});showMsg("تم إضافة البند ✓");
   };
 
   const rmItem=async(iid)=>{
@@ -657,7 +687,7 @@ function ProjectsPage({user,showMsg}){
         <div className="fg2 mt16"><button className="btn ba" style={{flex:1}} onClick={saveProj}>حفظ</button><button className="btn bg" onClick={()=>setM(null)}>إلغاء</button></div>
       </Modal>}
 
-      {modal==="detail"&&sel&&<Modal title={`🏗️ ${sel.name}`} onClose={()=>setM(null)}>
+      {modal==="detail"&&sel&&<Modal title={`🏗️ ${sel.name}`} onClose={()=>setM(null)} wide>
         <div style={{background:"var(--bg3)",borderRadius:10,padding:"11px 14px",marginBottom:14,fontSize:13}}>
           <div className="fb"><span>العميل: <strong>{sel.clientName}</strong></span><span className={`bdg ${SC[sel.status]||"bgr"}`}>{sel.status}</span></div>
           {sel.description&&<div style={{marginTop:5,color:"var(--txt3)"}}>{sel.description}</div>}
@@ -666,7 +696,7 @@ function ProjectsPage({user,showMsg}){
         {(sel.items||[]).length===0
           ?<div className="ts tm" style={{textAlign:"center",padding:"12px 0"}}>لا يوجد بنود بعد</div>
           :<div className="tw" style={{marginBottom:14}}><table>
-            <thead><tr><th>البند</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th><th></th></tr></thead>
+            <thead><tr><th>البند</th><th>الكمية</th><th>السعر / الوحدة</th><th>الإجمالي</th><th></th></tr></thead>
             <tbody>
               {(sel.items||[]).map(it=>(
                 <tr key={it.id}><td><div className="fb2">{it.name}</div>{it.note&&<div className="tx tm">{it.note}</div>}</td><td>{it.qty}</td><td>{it.unitPrice?.toLocaleString()} ج</td><td><span className="bdg ba2">{it.total?.toLocaleString()} ج</span></td><td><button className="btn bd bsm" onClick={()=>rmItem(it.id)}>✕</button></td></tr>
@@ -681,14 +711,32 @@ function ProjectsPage({user,showMsg}){
           <div className={`chip ${iForm.type==="labor"?"act":""}`} onClick={()=>setIF(f=>({...f,type:"labor",pid:""}))}>🔧 عمالة</div>
           <div className={`chip ${iForm.type==="custom"?"act":""}`} onClick={()=>setIF(f=>({...f,type:"custom",pid:""}))}>📝 يدوي</div>
         </div>
-        {iForm.type==="product"&&<div className="fg"><label>المنتج</label><select value={iForm.pid} onChange={e=>{const p=prods.find(x=>x.id===e.target.value);setIF(f=>({...f,pid:e.target.value,up:p?.sellPrice||""}));}}><option value="">— اختار منتج —</option>{prods.map(p=><option key={p.id} value={p.id}>{p.name} — {p.sellPrice} ج</option>)}</select></div>}
+        {iForm.type==="product"&&<div className="fg"><label>المنتج</label><select value={iForm.pid} onChange={e=>{const p=prods.find(x=>x.id===e.target.value);setIF(f=>({...f,pid:e.target.value,up:p?.sellPrice||""}));}}><option value="">— اختار منتج —</option>{prods.map(p=><option key={p.id} value={p.id}>{p.name} — {p.sellPrice} ج/{p.unit} ({p.calcType==="meter_sqr"?"م مربع":p.calcType==="meter_lin"?"م طولي":"قطعة"})</option>)}</select></div>}
         {(iForm.type==="labor"||iForm.type==="custom")&&<div className="fg"><label>اسم البند</label><input value={iForm.cname} onChange={e=>setIF(f=>({...f,cname:e.target.value}))} placeholder="تركيب سيراميك، دهان أسقف..."/></div>}
-        <div className="g3">
-          <div className="fg"><label>الكمية</label><input type="number" value={iForm.qty} onChange={e=>setIF(f=>({...f,qty:e.target.value}))}/></div>
-          <div className="fg"><label>سعر الوحدة</label><input type="number" value={iForm.up} onChange={e=>setIF(f=>({...f,up:e.target.value}))}/></div>
-          <div className="fg"><label>ملاحظة</label><input value={iForm.note} onChange={e=>setIF(f=>({...f,note:e.target.value}))}/></div>
-        </div>
-        {iForm.up&&iForm.qty&&<div style={{background:"var(--bg3)",borderRadius:8,padding:"9px 13px",fontSize:13,marginBottom:10}}>الإجمالي: <strong className="ta">{(Number(iForm.qty)*Number(iForm.up)).toLocaleString()} ج</strong></div>}
+        
+        {iForm.type==="product"&&selProd?.calcType==="meter_sqr"?(
+          <div className="g3">
+            <div className="fg"><label>الطول (م)</label><input type="number" step="0.01" value={iForm.len} onChange={e=>setIF(f=>({...f,len:e.target.value}))}/></div>
+            <div className="fg"><label>العرض (م)</label><input type="number" step="0.01" value={iForm.wid} onChange={e=>setIF(f=>({...f,wid:e.target.value}))}/></div>
+            <div className="fg"><label>سعر / م²</label><input type="number" value={iForm.up} onChange={e=>setIF(f=>({...f,up:e.target.value}))}/></div>
+          </div>
+        ):iForm.type==="product"&&selProd?.calcType==="meter_lin"?(
+          <div className="g2">
+            <div className="fg"><label>الطول (م)</label><input type="number" step="0.01" value={iForm.len} onChange={e=>setIF(f=>({...f,len:e.target.value}))}/></div>
+            <div className="fg"><label>سعر / م</label><input type="number" value={iForm.up} onChange={e=>setIF(f=>({...f,up:e.target.value}))}/></div>
+          </div>
+        ):(
+          <div className="g3">
+            <div className="fg"><label>الكمية</label><input type="number" value={iForm.qty} onChange={e=>setIF(f=>({...f,qty:e.target.value}))}/></div>
+            <div className="fg"><label>سعر الوحدة</label><input type="number" value={iForm.up} onChange={e=>setIF(f=>({...f,up:e.target.value}))}/></div>
+            <div className="fg"><label>ملاحظة</label><input value={iForm.note} onChange={e=>setIF(f=>({...f,note:e.target.value}))}/></div>
+          </div>
+        )}
+        
+        {calcTotal()>0&&<div style={{background:"var(--bg3)",borderRadius:8,padding:"9px 13px",fontSize:13,marginBottom:10}}>
+          {selProd?.calcType==="meter_sqr"&&iForm.len&&iForm.wid&&<span className="tm">{iForm.len}م × {iForm.wid}م = <strong>{(Number(iForm.len)*Number(iForm.wid)).toFixed(2)} م²</strong> — </span>}
+          الإجمالي: <strong className="ta">{calcTotal().toLocaleString()} ج</strong>
+        </div>}
         <button className="btn ba bfl" onClick={addItem}>إضافة البند ✓</button>
       </Modal>}
     </div>
@@ -700,7 +748,8 @@ function InvoicesPage({user,showMsg}){
   const [invs,setI]=useState([]);const [clients,setCl]=useState([]);const [projs,setPj]=useState([]);const [prods,setPr]=useState([]);
   const [modal,setM]=useState(null);const [sel,setSel]=useState(null);
   const [form,setF]=useState({cid:"",pjid:"",notes:"",disc:0,pm:"cash",ps:"paid"});
-  const [ex,setEx]=useState([]);const [exF,setExF]=useState({name:"",qty:1,up:"",note:""});
+  const [ex,setEx]=useState([]);
+  const [exF,setExF]=useState({pid:"",cname:"",qty:1,len:"",wid:"",up:"",note:"",type:"product"});
   const printRef=useRef();
 
   useEffect(()=>{
@@ -711,23 +760,42 @@ function InvoicesPage({user,showMsg}){
     return()=>{u1();u2();u3();u4();};
   },[]);
 
-  const selP=projs.find(p=>p.id===form.pjid);
-  const allIt=[...(selP?.items||[]),...ex];
+  const selPj=projs.find(p=>p.id===form.pjid);
+  const selExProd=prods.find(p=>p.id===exF.pid);
+  const allIt=[...(selPj?.items||[]),...ex];
   const sub=allIt.reduce((s,i)=>s+i.total,0);
   const disc=Number(form.disc||0);
   const tot=sub-disc;
 
+  const calcExTotal=()=>{
+    if(!exF.up) return 0;
+    const up=Number(exF.up);
+    if(exF.type==="product"&&selExProd){
+      if(selExProd.calcType==="meter_sqr") return Number(exF.len||0)*Number(exF.wid||0)*up;
+      if(selExProd.calcType==="meter_lin") return Number(exF.len||0)*up;
+    }
+    return Number(exF.qty||1)*up;
+  };
+
   const addEx=()=>{
-    if(!exF.name||!exF.up){showMsg("اكتب الاسم والسعر","error");return;}
-    setEx(x=>[...x,{id:"ext_"+Date.now(),name:exF.name,qty:Number(exF.qty),unitPrice:Number(exF.up),total:Number(exF.qty)*Number(exF.up),note:exF.note}]);
-    setExF({name:"",qty:1,up:"",note:""});
+    const prod=selExProd;
+    const name=prod?prod.name:exF.cname;
+    if(!name||!exF.up){showMsg("اكتب الاسم والسعر","error");return;}
+    const up=Number(exF.up);
+    let qty=Number(exF.qty||1);
+    let total=calcExTotal();
+    let note=exF.note;
+    if(prod?.calcType==="meter_sqr"){qty=Number(exF.len||0)*Number(exF.wid||0);note=(note?note+" — ":"")+`${exF.len}م × ${exF.wid}م = ${qty.toFixed(2)} م²`;}
+    else if(prod?.calcType==="meter_lin"){qty=Number(exF.len||0);note=(note?note+" — ":"")+`طول: ${qty} م`;}
+    setEx(x=>[...x,{id:"ext_"+Date.now(),name,qty:parseFloat(qty.toFixed(4)),unitPrice:up,total:parseFloat(total.toFixed(2)),note,calcType:prod?.calcType||"piece"}]);
+    setExF({pid:"",cname:"",qty:1,len:"",wid:"",up:"",note:"",type:"product"});
   };
 
   const saveInv=async()=>{
     if(!form.cid){showMsg("اختار العميل","error");return;}
     const cl=clients.find(c=>c.id===form.cid);
     const id="inv_"+Date.now();
-    const inv={id,invoiceNo:"INV-"+Date.now().toString().slice(-6),clientId:form.cid,clientName:cl?.name||"",clientPhone:cl?.phone||"",clientAddress:cl?.address||"",projectId:form.pjid||null,projectName:selP?.name||"",items:allIt,subtotal:sub,discount:disc,total:tot,paymentMethod:form.pm,payStatus:form.ps,notes:form.notes,date:today()};
+    const inv={id,invoiceNo:"INV-"+Date.now().toString().slice(-6),clientId:form.cid,clientName:cl?.name||"",clientPhone:cl?.phone||"",clientAddress:cl?.address||"",projectId:form.pjid||null,projectName:selPj?.name||"",items:allIt,subtotal:sub,discount:disc,total:tot,paymentMethod:form.pm,payStatus:form.ps,notes:form.notes,date:today()};
     await fbSet(`invoices_${user.shopId}/${id}`,inv);
     if(form.ps==="paid") await fbSet(`sessions_${user.shopId}/sess_${Date.now()}`,{id:"sess_"+Date.now(),date:today(),time:getTime(),serviceNames:`فاتورة — ${cl?.name}`,amount:tot,paymentMethod:form.pm,clientId:form.cid,clientName:cl?.name,invoiceId:id});
     setM(null);setF({cid:"",pjid:"",notes:"",disc:0,pm:"cash",ps:"paid"});setEx([]);showMsg("تم إنشاء الفاتورة ✓");
@@ -767,21 +835,49 @@ function InvoicesPage({user,showMsg}){
         )}
       </div>
 
-      {modal==="form"&&<Modal title="فاتورة جديدة" onClose={()=>setM(null)}>
+      {modal==="form"&&<Modal title="فاتورة جديدة" onClose={()=>setM(null)} wide>
         <div className="fg"><label>العميل</label><select value={form.cid} onChange={e=>setF(f=>({...f,cid:e.target.value,pjid:""}))}><option value="">— اختار عميل —</option>{clients.map(c=><option key={c.id} value={c.id}>#{c.id} — {c.name}</option>)}</select></div>
         {form.cid&&<div className="fg"><label>المشروع (اختياري)</label><select value={form.pjid} onChange={e=>setF(f=>({...f,pjid:e.target.value}))}><option value="">— بدون مشروع —</option>{projs.filter(p=>p.clientId===form.cid).map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></div>}
+        
         {allIt.length>0&&<div style={{background:"var(--bg3)",borderRadius:10,padding:"11px 14px",marginBottom:12,fontSize:13}}>
           <div className="fb2" style={{marginBottom:7}}>البنود ({allIt.length})</div>
-          {allIt.map((it,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderBottom:"1px solid var(--brd)"}}><span>{it.name} <span className="tm">× {it.qty}</span></span><span className="ta">{it.total?.toLocaleString()} ج</span></div>)}
+          {allIt.map((it,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderBottom:"1px solid var(--brd)"}}><span>{it.name}{it.note&&<span className="tm"> — {it.note}</span>}</span><span className="ta">{it.total?.toLocaleString()} ج</span></div>)}
           <div style={{display:"flex",justifyContent:"space-between",fontWeight:700,marginTop:7,color:"var(--accent)"}}><span>الإجمالي</span><span>{sub.toLocaleString()} ج</span></div>
         </div>}
-        <div style={{fontSize:13,fontWeight:700,marginBottom:8}}>➕ بند إضافي</div>
-        <div className="g3">
-          <div className="fg"><label>الاسم</label><input value={exF.name} onChange={e=>setExF(f=>({...f,name:e.target.value}))}/></div>
-          <div className="fg"><label>الكمية</label><input type="number" value={exF.qty} onChange={e=>setExF(f=>({...f,qty:e.target.value}))}/></div>
-          <div className="fg"><label>السعر</label><input type="number" value={exF.up} onChange={e=>setExF(f=>({...f,up:e.target.value}))}/></div>
+        
+        <div style={{background:"var(--bg4)",borderRadius:10,padding:"14px",marginBottom:14}}>
+          <div style={{fontSize:13,fontWeight:700,marginBottom:8}}>➕ إضافة بند</div>
+          <div className="chips" style={{marginBottom:8}}>
+            <div className={`chip ${exF.type==="product"?"act":""}`} onClick={()=>setExF(f=>({...f,type:"product",cname:""}))}>📦 من المنتجات</div>
+            <div className={`chip ${exF.type==="custom"?"act":""}`} onClick={()=>setExF(f=>({...f,type:"custom",pid:""}))}>📝 يدوي</div>
+          </div>
+          {exF.type==="product"?(<div className="fg" style={{marginBottom:8}}><label>المنتج</label><select value={exF.pid} onChange={e=>{const p=prods.find(x=>x.id===e.target.value);setExF(f=>({...f,pid:e.target.value,up:p?.sellPrice||""}));}}><option value="">— اختار منتج —</option>{prods.map(p=><option key={p.id} value={p.id}>{p.name} ({p.calcType==="meter_sqr"?"م²":p.calcType==="meter_lin"?"م طولي":"قطعة"}) — {p.sellPrice} ج</option>)}</select></div>
+          ):(<div className="fg" style={{marginBottom:8}}><label>اسم البند</label><input value={exF.cname} onChange={e=>setExF(f=>({...f,cname:e.target.value}))}/></div>)}
+          
+          {exF.type==="product"&&selExProd?.calcType==="meter_sqr"?(
+            <div className="g4">
+              <div className="fg" style={{marginBottom:0}}><label>الطول (م)</label><input type="number" step="0.01" value={exF.len} onChange={e=>setExF(f=>({...f,len:e.target.value}))}/></div>
+              <div className="fg" style={{marginBottom:0}}><label>العرض (م)</label><input type="number" step="0.01" value={exF.wid} onChange={e=>setExF(f=>({...f,wid:e.target.value}))}/></div>
+              <div className="fg" style={{marginBottom:0}}><label>سعر / م²</label><input type="number" value={exF.up} onChange={e=>setExF(f=>({...f,up:e.target.value}))}/></div>
+              <div className="fg" style={{marginBottom:0}}><label>ملاحظة</label><input value={exF.note} onChange={e=>setExF(f=>({...f,note:e.target.value}))}/></div>
+            </div>
+          ):exF.type==="product"&&selExProd?.calcType==="meter_lin"?(
+            <div className="g3">
+              <div className="fg" style={{marginBottom:0}}><label>الطول (م)</label><input type="number" step="0.01" value={exF.len} onChange={e=>setExF(f=>({...f,len:e.target.value}))}/></div>
+              <div className="fg" style={{marginBottom:0}}><label>سعر / م</label><input type="number" value={exF.up} onChange={e=>setExF(f=>({...f,up:e.target.value}))}/></div>
+              <div className="fg" style={{marginBottom:0}}><label>ملاحظة</label><input value={exF.note} onChange={e=>setExF(f=>({...f,note:e.target.value}))}/></div>
+            </div>
+          ):(
+            <div className="g3">
+              <div className="fg" style={{marginBottom:0}}><label>الكمية</label><input type="number" value={exF.qty} onChange={e=>setExF(f=>({...f,qty:e.target.value}))}/></div>
+              <div className="fg" style={{marginBottom:0}}><label>السعر</label><input type="number" value={exF.up} onChange={e=>setExF(f=>({...f,up:e.target.value}))}/></div>
+              <div className="fg" style={{marginBottom:0}}><label>ملاحظة</label><input value={exF.note} onChange={e=>setExF(f=>({...f,note:e.target.value}))}/></div>
+            </div>
+          )}
+          {calcExTotal()>0&&<div style={{fontSize:12,color:"var(--accent)",marginTop:6}}>الإجمالي: <strong>{calcExTotal().toLocaleString()} ج</strong></div>}
+          <button className="btn bg bsm" style={{marginTop:8}} onClick={addEx}>+ إضافة البند</button>
         </div>
-        <button className="btn bg bsm" style={{marginBottom:12}} onClick={addEx}>+ إضافة البند</button>
+
         <div className="g2">
           <div className="fg"><label>خصم (ج)</label><input type="number" value={form.disc} onChange={e=>setF(f=>({...f,disc:e.target.value}))}/></div>
           <div className="fg"><label>حالة الدفع</label><div className="chips">{[["paid","مدفوع"],["pending","معلق"],["partial","جزئي"]].map(([id,lb])=><div key={id} className={`chip ${form.ps===id?"act":""}`} onClick={()=>setF(f=>({...f,ps:id}))}>{lb}</div>)}</div></div>
@@ -808,10 +904,16 @@ function InvoicesPage({user,showMsg}){
               {sel.projectName&&<div><div style={{fontWeight:700,marginBottom:4}}>المشروع</div><div>{sel.projectName}</div></div>}
             </div>
             <table className="invt" style={{marginBottom:14}}>
-              <thead><tr><th>#</th><th>البند / الخدمة</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead>
+              <thead><tr><th>#</th><th>البند / الخدمة</th><th>الكمية</th><th>السعر / الوحدة</th><th>الإجمالي</th></tr></thead>
               <tbody>
                 {(sel.items||[]).map((it,i)=>(
-                  <tr key={i}><td>{i+1}</td><td><div style={{fontWeight:600}}>{it.name}</div>{it.note&&<div style={{fontSize:11,color:"#999"}}>{it.note}</div>}</td><td>{it.qty}</td><td>{it.unitPrice?.toLocaleString()} ج</td><td style={{fontWeight:700}}>{it.total?.toLocaleString()} ج</td></tr>
+                  <tr key={i}><td>{i+1}</td>
+                  <td><div style={{fontWeight:600}}>{it.name}</div>
+                  {/* Show meter info to client but NOT cost */}
+                  {it.note&&<div style={{fontSize:11,color:"#999"}}>{it.note}</div>}</td>
+                  <td>{it.qty}</td>
+                  <td>{it.unitPrice?.toLocaleString()} ج</td>
+                  <td style={{fontWeight:700}}>{it.total?.toLocaleString()} ج</td></tr>
                 ))}
                 {sel.discount>0&&<tr><td colSpan={4} style={{textAlign:"left",color:"#e67e22",fontWeight:700}}>خصم</td><td style={{color:"#e67e22",fontWeight:700}}>- {sel.discount?.toLocaleString()} ج</td></tr>}
                 <tr style={{background:"#fef9ef"}}><td colSpan={4} style={{textAlign:"left",fontWeight:700,fontSize:15}}>الإجمالي النهائي</td><td style={{fontSize:17,color:"#f5a623",fontWeight:800}}>{sel.total?.toLocaleString()} ج</td></tr>
@@ -833,14 +935,16 @@ function InvoicesPage({user,showMsg}){
 /* ===== EMPLOYEES ===== */
 function EmpPage({user,showMsg}){
   const [staff,setS]=useState([]);const [modal,setM]=useState(false);const [eu,setEU]=useState(null);
-  const [form,setF]=useState({name:"",uname:"",pass:"",role:"employee",phone:"",salary:""});
+  const [form,setF]=useState({name:"",uname:"",pass:"",role:"employee",phone:"",salary:"",payPeriod:"monthly"});
 
   useEffect(()=>fbOn("users",v=>{if(v)setS(Object.values(v).filter(u=>(u.role==="employee"||u.role==="manager")&&u.shopId===user.shopId));}),[]);
+
+  const PAY_PERIODS=[{id:"monthly",lb:"شهري"},{id:"weekly",lb:"أسبوعي"},{id:"biweekly",lb:"أسبوعين"}];
 
   const save=async()=>{
     if(!form.name||!form.uname){showMsg("ملء كل الحقول مطلوب","error");return;}
     if(eu){
-      const upd={name:form.name,username:form.uname,role:form.role,phone:form.phone,salary:Number(form.salary||0)};
+      const upd={name:form.name,username:form.uname,role:form.role,phone:form.phone,salary:Number(form.salary||0),payPeriod:form.payPeriod||"monthly"};
       if(form.pass)upd.password=form.pass;
       await fbUpd(`users/${eu.id}`,upd);showMsg("تم التعديل ✓");
     }else{
@@ -848,35 +952,35 @@ function EmpPage({user,showMsg}){
       const users=await fbGet("users");
       if(users&&Object.values(users).find(u=>u.username===form.uname)){showMsg("اسم المستخدم موجود","error");return;}
       const id="emp_"+Date.now();
-      await fbSet(`users/${id}`,{id,username:form.uname,password:form.pass,role:form.role,name:form.name,phone:form.phone,salary:Number(form.salary||0),shopId:user.shopId,active:true,joinDate:today()});
+      await fbSet(`users/${id}`,{id,username:form.uname,password:form.pass,role:form.role,name:form.name,phone:form.phone,salary:Number(form.salary||0),payPeriod:form.payPeriod||"monthly",shopId:user.shopId,active:true,joinDate:today()});
       showMsg("تم الإضافة ✓");
     }
-    setM(false);setEU(null);setF({name:"",uname:"",pass:"",role:"employee",phone:"",salary:""});
+    setM(false);setEU(null);setF({name:"",uname:"",pass:"",role:"employee",phone:"",salary:"",payPeriod:"monthly"});
   };
   const tog=async(id,cur)=>{await fbUpd(`users/${id}`,{active:!cur});showMsg(!cur?"تم التفعيل ✓":"تم التعطيل");};
+  const PPL={monthly:"شهري",weekly:"أسبوعي",biweekly:"أسبوعين"};
 
   return(
     <div className="fi">
       <div className="ph">
         <div><h1>الموظفين</h1><p>{staff.length} موظف</p></div>
-        <button className="btn ba" onClick={()=>{setEU(null);setF({name:"",uname:"",pass:"",role:"employee",phone:"",salary:""});setM(true);}}>+ إضافة موظف</button>
+        <button className="btn ba" onClick={()=>{setEU(null);setF({name:"",uname:"",pass:"",role:"employee",phone:"",salary:"",payPeriod:"monthly"});setM(true);}}>+ إضافة موظف</button>
       </div>
       <div className="card">
         {staff.length===0?<Empty icon="👤" text="لا يوجد موظفين"/>:(
           <div className="tw"><table>
-            <thead><tr><th>الاسم</th><th>الدور</th><th>اسم المستخدم</th><th>التليفون</th><th>الراتب</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+            <thead><tr><th>الاسم</th><th>الدور</th><th>الراتب</th><th>دورة الدفع</th><th>الحالة</th><th>إجراءات</th></tr></thead>
             <tbody>{staff.map(e=>{
               const act=e.active!==false;
               return(
                 <tr key={e.id}>
-                  <td className="fb2">{e.name}</td>
+                  <td><div className="fb2">{e.name}</div><div className="tx tm">{e.username}</div></td>
                   <td><span className={`bdg ${e.role==="manager"?"bpu":"bb2"}`}>{e.role==="manager"?"مدير":"موظف"}</span></td>
-                  <td className="tm">{e.username}</td>
-                  <td className="tm">{e.phone||"—"}</td>
                   <td>{e.salary?<span className="bdg ba2">{e.salary?.toLocaleString()} ج</span>:"—"}</td>
+                  <td><span className="bdg bgr">{PPL[e.payPeriod]||"شهري"}</span></td>
                   <td><span className={`bdg ${act?"bg2":"br2"}`}>{act?"نشط":"موقوف"}</span></td>
                   <td><div className="fg2">
-                    <button className="btn bg bsm" onClick={()=>{setEU(e);setF({name:e.name,uname:e.username,pass:"",role:e.role,phone:e.phone||"",salary:e.salary||""});setM(true);}}>تعديل</button>
+                    <button className="btn bg bsm" onClick={()=>{setEU(e);setF({name:e.name,uname:e.username,pass:"",role:e.role,phone:e.phone||"",salary:e.salary||"",payPeriod:e.payPeriod||"monthly"});setM(true);}}>تعديل</button>
                     <button className={`btn bsm ${act?"bw":"bs"}`} onClick={()=>tog(e.id,act)}>{act?"تعطيل":"تفعيل"}</button>
                   </div></td>
                 </tr>
@@ -895,17 +999,27 @@ function EmpPage({user,showMsg}){
           <div className="fg"><label>اسم المستخدم</label><input value={form.uname} onChange={e=>setF(f=>({...f,uname:e.target.value}))}/></div>
           <div className="fg"><label>كلمة المرور {eu&&"(فارغة = بدون تغيير)"}</label><input type="password" value={form.pass} onChange={e=>setF(f=>({...f,pass:e.target.value}))}/></div>
         </div>
-        <div className="fg"><label>الراتب الشهري (ج)</label><input type="number" value={form.salary} onChange={e=>setF(f=>({...f,salary:e.target.value}))}/></div>
+        <div className="g2">
+          <div className="fg"><label>الراتب الأساسي (ج)</label><input type="number" value={form.salary} onChange={e=>setF(f=>({...f,salary:e.target.value}))}/></div>
+          <div className="fg"><label>دورة الدفع</label><div className="chips">{PAY_PERIODS.map(pp=><div key={pp.id} className={`chip ${form.payPeriod===pp.id?"act":""}`} onClick={()=>setF(f=>({...f,payPeriod:pp.id}))}>{pp.lb}</div>)}</div></div>
+        </div>
         <div className="fg2 mt16"><button className="btn ba" style={{flex:1}} onClick={save}>حفظ</button><button className="btn bg" onClick={()=>{setM(false);setEU(null);}}>إلغاء</button></div>
       </Modal>}
     </div>
   );
 }
 
-/* ===== ATTENDANCE ===== */
+/* ===== ATTENDANCE — Enhanced with late options & salary calc ===== */
 function AttPage({user,showMsg}){
-  const [staff,setS]=useState([]);const [att,setAtt]=useState({});
-  const [filter,setF]=useState("daily");const [vdate,setVD]=useState(today());const [range,setR]=useState("week");
+  const [staff,setS]=useState([]);
+  const [att,setAtt]=useState({});
+  const [filter,setF]=useState("daily");
+  const [vdate,setVD]=useState(today());
+  const [range,setR]=useState("week");
+  const [lateModal,setLM]=useState(null); // {emp, date}
+  const [lateOpt,setLO]=useState("half"); // "half" | "custom"
+  const [lateHrs,setLH]=useState("");
+  const [salModal,setSM]=useState(null); // emp
 
   useEffect(()=>{
     const u1=fbOn("users",v=>{if(v)setS(Object.values(v).filter(u2=>u2.shopId===user.shopId&&(u2.role==="employee"||u2.role==="manager")));});
@@ -913,12 +1027,38 @@ function AttPage({user,showMsg}){
     return()=>{u1();u2();};
   },[]);
 
-  const setSt=async(eid,date,status)=>{
-    await fbSet(`attendance_${user.shopId}/${date}_${eid}`,{empId:eid,date,status,by:user.id,at:getTime()});
+  const getAtt=(eid,date)=>att[`${date}_${eid}`]||null;
+  const getSt=(eid,date)=>getAtt(eid,date)?.status||null;
+
+  const setSt=async(eid,date,status,extra={})=>{
+    const rec={empId:eid,date,status,by:user.id,at:getTime(),...extra};
+    await fbSet(`attendance_${user.shopId}/${date}_${eid}`,rec);
     showMsg("تم التسجيل ✓");
   };
-  const getSt=(eid,date)=>att[`${date}_${eid}`]?.status||null;
 
+  const handleAttBtn=(emp,date,status)=>{
+    if(status==="late"){
+      setLM({emp,date});
+      setLO("half");setLH("");
+    } else {
+      setSt(emp.id,date,status);
+    }
+  };
+
+  const confirmLate=async()=>{
+    if(!lateModal) return;
+    let deduction=0;
+    const sal=Number(lateModal.emp.salary||0);
+    const pp=lateModal.emp.payPeriod||"monthly";
+    const days=pp==="weekly"?7:pp==="biweekly"?14:30;
+    const dayRate=sal/days;
+    if(lateOpt==="half") deduction=dayRate/2;
+    else if(lateOpt==="custom" && lateHrs) deduction=(dayRate/8)*Number(lateHrs);
+    await setSt(lateModal.emp.id,lateModal.date,"late",{lateType:lateOpt,lateHours:lateOpt==="custom"?Number(lateHrs):null,deduction:parseFloat(deduction.toFixed(2))});
+    setLM(null);setLH("");
+  };
+
+  // Get date range
   const getDR=(r)=>{
     const dates=[];const end=getNow();let start=new Date(getNow());
     if(r==="week")start.setDate(start.getDate()-6);
@@ -927,12 +1067,34 @@ function AttPage({user,showMsg}){
     for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1))dates.push(d.toISOString().slice(0,10));
     return dates;
   };
-
   const rd=getDR(range);
-  const getStats=(eid,dates)=>{
-    const s={present:0,absent:0,late:0,leave:0,total:dates.length};
-    dates.forEach(d=>{const st=getSt(eid,d);if(st)s[st]=(s[st]||0)+1;});
-    s.unrecorded=s.total-(s.present+s.absent+s.late+s.leave);return s;
+
+  const getStats=(emp,dates)=>{
+    const s={present:0,absent:0,late:0,leave:0,lateDeductions:0,total:dates.length};
+    dates.forEach(d=>{
+      const rec=getAtt(emp.id,d);
+      if(rec){
+        s[rec.status]=(s[rec.status]||0)+1;
+        if(rec.status==="late") s.lateDeductions+=Number(rec.deduction||0);
+      }
+    });
+    s.unrecorded=s.total-(s.present+s.absent+s.late+s.leave);
+    return s;
+  };
+
+  // Salary calculation for period
+  const calcSalary=(emp,dates)=>{
+    const st=getStats(emp,dates);
+    const baseSalary=Number(emp.salary||0);
+    const pp=emp.payPeriod||"monthly";
+    const stdDays=pp==="weekly"?7:pp==="biweekly"?14:30;
+    // scale base to the actual date range shown
+    const scaledSalary=(baseSalary/stdDays)*dates.length;
+    const dayRate=baseSalary/stdDays;
+    const absentDeduction=st.absent*dayRate;
+    const lateDeduction=st.lateDeductions;
+    const netSalary=Math.max(0,scaledSalary-absentDeduction-lateDeduction);
+    return {baseSalary,scaledSalary,dayRate,absentDeduction,lateDeduction,netSalary,st};
   };
 
   const AC={present:"#10b981",absent:"#ef4444",late:"#f59e0b",leave:"#6366f1"};
@@ -942,7 +1104,11 @@ function AttPage({user,showMsg}){
     <div className="fi">
       <div className="ph">
         <div><h1>الحضور والغياب</h1></div>
-        <div className="chips">{[["daily","📅 يومي"],["report","📊 تقرير"]].map(([id,lb])=><div key={id} className={`chip ${filter===id?"act":""}`} onClick={()=>setF(id)}>{lb}</div>)}</div>
+        <div className="chips">
+          {[["daily","📅 يومي"],["report","📊 تقرير وراتب"]].map(([id,lb])=>
+            <div key={id} className={`chip ${filter===id?"act":""}`} onClick={()=>setF(id)}>{lb}</div>
+          )}
+        </div>
       </div>
 
       {filter==="daily"&&<>
@@ -956,14 +1122,24 @@ function AttPage({user,showMsg}){
           <div className="ag">
             {staff.map(e=>{
               const st=getSt(e.id,vdate);
+              const rec=getAtt(e.id,vdate);
               return(
                 <div key={e.id} className="ac">
                   <div className="an">{e.name}</div>
-                  {st&&<div style={{marginBottom:5}}><span className="bdg" style={{background:AC[st]+"22",color:AC[st]}}>{AL[st]}</span></div>}
-                  <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-                    {ATTS.map(s=>(
-                      <button key={s.id} className="ab2" style={st===s.id?{background:s.color,color:"white",border:"none"}:{}}
-                        onClick={()=>setSt(e.id,vdate,s.id)}>{s.label}</button>
+                  {st&&<div style={{marginBottom:6,fontSize:12}}>
+                    <span className="bdg" style={{background:AC[st]+"22",color:AC[st]}}>{AL[st]}</span>
+                    {st==="late"&&rec?.lateType&&<span className="tm" style={{marginRight:5,fontSize:11}}>
+                      {rec.lateType==="half"?"نص يوم":`${rec.lateHours} ساعة`}
+                      {rec.deduction>0&&` (خصم ${rec.deduction.toFixed(0)} ج)`}
+                    </span>}
+                  </div>}
+                  <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+                    {ATT_STATUSES.map(s=>(
+                      <button key={s.id} className="att-btn"
+                        style={st===s.id?{background:s.color,color:"white",borderColor:s.color}:{}}
+                        onClick={()=>handleAttBtn(e,vdate,s.id)}>
+                        {s.short}
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -977,53 +1153,107 @@ function AttPage({user,showMsg}){
         <div className="card mb16">
           <div className="fb">
             <div className="ct" style={{marginBottom:0}}>فترة التقرير</div>
-            <div className="chips">{[["week","أسبوع"],["two_weeks","أسبوعين"],["month","شهر"]].map(([id,lb])=><div key={id} className={`chip ${range===id?"act":""}`} onClick={()=>setR(id)}>{lb}</div>)}</div>
+            <div className="chips">
+              {[["week","أسبوع"],["two_weeks","أسبوعين"],["month","شهر"]].map(([id,lb])=>
+                <div key={id} className={`chip ${range===id?"act":""}`} onClick={()=>setR(id)}>{lb}</div>
+              )}
+            </div>
           </div>
         </div>
         {staff.length===0?<Empty icon="👤" text="لا يوجد موظفين"/>:(
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
             {staff.map(e=>{
-              const st=getStats(e.id,rd);
+              const {baseSalary,absentDeduction,lateDeduction,netSalary,st}=calcSalary(e,rd);
               const pct=st.total>0?Math.round((st.present/st.total)*100):0;
               const pc=pct>=80?"var(--green)":pct>=60?"var(--orange)":"var(--red)";
+              const pp={monthly:"شهري",weekly:"أسبوعي",biweekly:"كل أسبوعين"}[e.payPeriod]||"شهري";
               return(
                 <div key={e.id} className="card">
-                  <div className="fb" style={{marginBottom:10}}>
-                    <div><div className="fb2">{e.name}</div><div className="tx tm">{rd.length} يوم</div></div>
-                    <div style={{textAlign:"center"}}><div style={{fontFamily:"var(--fen)",fontSize:26,fontWeight:800,color:pc}}>{pct}%</div><div className="tx tm">نسبة الحضور</div></div>
+                  <div className="fb" style={{marginBottom:12}}>
+                    <div>
+                      <div className="fb2" style={{fontSize:15}}>{e.name}</div>
+                      <div className="tx tm">راتب {pp}: {baseSalary.toLocaleString()} ج · {rd.length} يوم</div>
+                    </div>
+                    <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                      <div style={{textAlign:"center"}}>
+                        <div style={{fontFamily:"var(--fen)",fontSize:22,fontWeight:800,color:pc}}>{pct}%</div>
+                        <div className="tx tm">حضور</div>
+                      </div>
+                      <button className="btn ba bsm" onClick={()=>setSM(calcSalary(e,rd))}>💰 الراتب</button>
+                    </div>
                   </div>
                   <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:10}}>
-                    {Object.entries({present:"حاضر",late:"متأخر",absent:"غائب",leave:"إجازة"}).map(([k,lb])=>(
+                    {[["present","حاضر"],["late","متأخر"],["absent","غائب"],["leave","إجازة"]].map(([k,lb])=>(
                       <div key={k} style={{background:"var(--bg3)",borderRadius:8,padding:"7px 12px",textAlign:"center",flex:"1 1 60px"}}>
                         <div style={{fontFamily:"var(--fen)",fontSize:18,fontWeight:800,color:AC[k]}}>{st[k]||0}</div>
                         <div className="tx tm">{lb}</div>
                       </div>
                     ))}
                   </div>
-                  <div style={{height:7,background:"var(--bg3)",borderRadius:4,overflow:"hidden"}}>
+                  {(absentDeduction>0||lateDeduction>0)&&(
+                    <div style={{background:"rgba(239,68,68,.08)",borderRadius:8,padding:"8px 12px",fontSize:12,display:"flex",gap:16,flexWrap:"wrap"}}>
+                      {absentDeduction>0&&<span className="trd">خصم غياب: {absentDeduction.toFixed(0)} ج</span>}
+                      {lateDeduction>0&&<span style={{color:"var(--orange)"}}>خصم تأخير: {lateDeduction.toFixed(0)} ج</span>}
+                      <span style={{color:"var(--green)",fontWeight:700,marginRight:"auto"}}>صافي الراتب: {netSalary.toFixed(0)} ج</span>
+                    </div>
+                  )}
+                  <div style={{height:6,background:"var(--bg3)",borderRadius:4,overflow:"hidden",marginTop:8}}>
                     <div style={{height:"100%",width:`${pct}%`,background:pc,borderRadius:4}}/>
                   </div>
                 </div>
               );
             })}
-            <div className="card" style={{borderColor:"var(--accent)",borderWidth:2}}>
-              <div className="ct">📊 ملخص الفريق — {rd.length} يوم</div>
-              <div className="sg">
-                {staff.map(e=>{
-                  const st=getStats(e.id,rd);
-                  return(
-                    <div key={e.id} style={{background:"var(--bg3)",borderRadius:10,padding:"10px 14px"}}>
-                      <div className="ts fb2">{e.name}</div>
-                      <div style={{fontFamily:"var(--fen)",fontSize:20,fontWeight:800,color:"var(--accent)",marginTop:3}}>{st.present}<span style={{fontSize:12,color:"var(--txt3)"}}>/{st.total}</span></div>
-                      <div className="tx tm">يوم حضور</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
           </div>
         )}
       </>}
+
+      {/* Late options modal */}
+      {lateModal&&<Modal title={`تأخير — ${lateModal.emp.name}`} onClose={()=>setLM(null)}>
+        <div style={{marginBottom:14,fontSize:13,color:"var(--txt2)"}}>اختار نوع التأخير لحساب الخصم تلقائي:</div>
+        <div className="pcs" style={{marginBottom:16}}>
+          <div className={`pc ${lateOpt==="half"?"act":""}`} onClick={()=>{setLO("half");setLH("");}}>
+            <span style={{fontSize:20}}>🕐</span>
+            <div><div style={{fontWeight:700}}>نص يوم</div><div className="tx tm">خصم 50% من يومية</div></div>
+          </div>
+          <div className={`pc ${lateOpt==="custom"?"act":""}`} onClick={()=>setLO("custom")}>
+            <span style={{fontSize:20}}>⏱️</span>
+            <div><div style={{fontWeight:700}}>مدة محددة</div><div className="tx tm">تحدد عدد الساعات</div></div>
+          </div>
+        </div>
+        {lateOpt==="custom"&&(
+          <div className="fg">
+            <label>عدد ساعات التأخير</label>
+            <input type="number" step="0.5" min="0.5" max="8" value={lateHrs} onChange={e=>setLH(e.target.value)} placeholder="مثال: 2"/>
+          </div>
+        )}
+        {lateModal.emp.salary>0&&(()=>{
+          const pp=lateModal.emp.payPeriod||"monthly";
+          const days=pp==="weekly"?7:pp==="biweekly"?14:30;
+          const dayRate=Number(lateModal.emp.salary)/days;
+          let ded=0;
+          if(lateOpt==="half") ded=dayRate/2;
+          else if(lateOpt==="custom"&&lateHrs) ded=(dayRate/8)*Number(lateHrs);
+          return ded>0?<div style={{background:"var(--bg3)",borderRadius:8,padding:"10px 14px",fontSize:13,marginBottom:12}}>
+            يومية: <strong>{dayRate.toFixed(1)} ج</strong> → خصم: <strong className="trd">{ded.toFixed(1)} ج</strong>
+          </div>:null;
+        })()}
+        <div className="fg2 mt16">
+          <button className="btn ba" style={{flex:1}} onClick={confirmLate}>تأكيد التسجيل</button>
+          <button className="btn bg" onClick={()=>setLM(null)}>إلغاء</button>
+        </div>
+      </Modal>}
+
+      {/* Salary breakdown modal */}
+      {salModal&&<Modal title="تفاصيل الراتب" onClose={()=>setSM(null)}>
+        <div className="sal-box">
+          <div className="sal-row"><span>الراتب الأساسي (للفترة)</span><span className="ta">{salModal.scaledSalary.toFixed(0)} ج</span></div>
+          <div className="sal-row"><span>أيام الغياب ({salModal.st.absent} يوم)</span><span className="trd">- {salModal.absentDeduction.toFixed(0)} ج</span></div>
+          <div className="sal-row"><span>خصم التأخير ({salModal.st.late} مرة)</span><span style={{color:"var(--orange)"}}>- {salModal.lateDeduction.toFixed(0)} ج</span></div>
+          <div style={{height:1,background:"var(--brd)",margin:"8px 0"}}/>
+          <div className="sal-row"><span>صافي الراتب المستحق</span><span style={{fontFamily:"var(--fen)",fontSize:18}}>{salModal.netSalary.toFixed(0)} ج</span></div>
+        </div>
+        <button className="btn bg bfl mt16" onClick={()=>setSM(null)}>إغلاق</button>
+      </Modal>}
     </div>
   );
 }
@@ -1079,7 +1309,17 @@ function RevPage({user}){
 function ShopsPage({showMsg}){
   const [shops,setSh]=useState([]);
   useEffect(()=>fbOn("shops",v=>setSh(v?Object.values(v):[])) ,[]);
-  const tog=async(id,cur)=>{await fbUpd(`shops/${id}`,{active:!cur});showMsg("تم التحديث ✓");};
+  const tog=async(id,cur)=>{
+    await fbUpd(`shops/${id}`,{active:!cur});
+    // Also toggle all users in this shop
+    const users=await fbGet("users");
+    if(users){
+      const batch={};
+      Object.values(users).filter(u=>u.shopId===id&&u.role!=="superadmin").forEach(u=>{batch[`users/${u.id}/active`]=!cur;});
+      if(Object.keys(batch).length) await fbUpd("/",batch);
+    }
+    showMsg("تم التحديث ✓");
+  };
   return(
     <div className="fi">
       <div className="ph"><h1>الشركات</h1><p>{shops.length} شركة</p></div>
